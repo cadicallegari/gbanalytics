@@ -25,10 +25,10 @@ type Commit struct {
 }
 
 type Data struct {
-	Actors  []Actor
-	Repos   []Repo
-	Events  []Event
-	Commits []Commit
+	Actors  []*Actor
+	Repos   []*Repo
+	Events  []*Event
+	Commits []*Commit
 }
 
 // Top 10 active users sorted by amount of PRs created and commits pushed

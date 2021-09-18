@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -82,7 +83,9 @@ func main() {
 		ReposFile:   path.Join(cfg.dataPath, "repos.csv"),
 	})
 
-	dt, err := loader.Load()
+	ctx := context.Background()
+
+	dt, err := loader.Load(ctx)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Errorf("unable to load data: %s", err))
 		os.Exit(1)
