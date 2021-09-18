@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
+
+	"github.com/cadicallegari/gbanalytics/csv"
 )
 
 var version = "dev" // it will be set on build time
@@ -72,5 +75,56 @@ func main() {
 		return
 	}
 
-	fmt.Println("end")
+	loader := csv.NewLoader(csv.Config{
+		ActorsFile:  path.Join(cfg.dataPath, "actors.csv"),
+		CommitsFile: path.Join(cfg.dataPath, "commits.csv"),
+		EventsFile:  path.Join(cfg.dataPath, "events.csv"),
+		ReposFile:   path.Join(cfg.dataPath, "repos.csv"),
+	})
+
+	dt, err := loader.Load()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, fmt.Errorf("unable to load data: %s", err))
+		os.Exit(1)
+	}
+
+	switch cfg.query {
+	case "top-active-users":
+		users, err := dt.MostActiveUsers(10)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active users: %s", err))
+			os.Exit(1)
+		}
+
+		for i, u := range users {
+			fmt.Println(i+1, u.Username)
+		}
+
+	case "top-active-repos":
+		repos, err := dt.MostActiveRepos(10)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active repos: %s", err))
+			os.Exit(1)
+		}
+
+		for i, r := range repos {
+			fmt.Println(i+1, r.Name)
+		}
+
+	case "top-watch-repos":
+		repos, err := dt.MostWachedRepos(10)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most watched repos: %s", err))
+			os.Exit(1)
+		}
+
+		for i, r := range repos {
+			fmt.Println(i+1, r.Name)
+		}
+
+	default:
+		// move it to the validation step
+		fmt.Fprintln(os.Stderr, "unkown query")
+		os.Exit(1)
+	}
 }
