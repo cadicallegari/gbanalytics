@@ -81,6 +81,24 @@ func usage() {
 	flag.PrintDefaults()
 }
 
+func repoNameOrID(repos map[string]*gbanalytics.Repo, id string) string {
+	r, ok := repos[id]
+	if !ok {
+		return id
+	}
+
+	return r.Name
+}
+
+func usernameOrID(actors map[string]*gbanalytics.Actor, id string) string {
+	r, ok := actors[id]
+	if !ok {
+		return id
+	}
+
+	return r.Username
+}
+
 func main() {
 	flag.Usage = usage
 
@@ -120,7 +138,7 @@ func main() {
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Actors[r.ID].Username)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, usernameOrID(data.Actors, r.ID))
 		}
 
 	case "top-active-repos":
@@ -131,7 +149,7 @@ func main() {
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Repos[r.ID].Name)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, repoNameOrID(data.Repos, r.ID))
 		}
 
 	case "top-watch-repos":
@@ -142,7 +160,7 @@ func main() {
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Repos[r.ID].Name)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, repoNameOrID(data.Repos, r.ID))
 		}
 
 	default:
