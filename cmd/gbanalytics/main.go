@@ -41,6 +41,10 @@ func (cfg config) validate() error {
 		return fmt.Errorf("missing data path parameter")
 	}
 
+	if cfg.limit < 0 {
+		return fmt.Errorf("limit must be greater than 0")
+	}
+
 	var queryFound bool
 	for _, vq := range validQueries {
 		if cfg.query == vq {

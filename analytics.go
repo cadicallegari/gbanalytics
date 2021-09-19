@@ -45,7 +45,7 @@ func rankToResults(rank map[string]int, n int) []*Result {
 		return results[i].Count > results[j].Count
 	})
 
-	if len(results) > n {
+	if n > 0 && len(results) > n {
 		return results[:n]
 	}
 
@@ -53,7 +53,7 @@ func rankToResults(rank map[string]int, n int) []*Result {
 }
 
 // MostActiveUsers active users sorted by amount of PRs created and commits pushed
-func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
+func MostActiveUsers(events []*Event, commitsByEvent map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
 	for _, e := range events {
@@ -62,7 +62,7 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 		}
 
 		if e.Type == "PushEvent" {
-			rank[e.ActorID] += len(commits[e.ID])
+			rank[e.ActorID] += len(commitsByEvent[e.ID])
 		}
 	}
 
