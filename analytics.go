@@ -28,19 +28,14 @@ type Commit struct {
 	Message string
 }
 
-type Data struct {
-	Actors  map[string]*Actor
-	Repos   map[string]*Repo
-	Events  []*Event
-	Commits map[string][]*Commit
-}
-
 type Result struct {
 	ID    string
 	Count int
 }
 
-// Top 10 active users sorted by amount of PRs created and commits pushed
+// func sortResultByCount(origin []*Result, n int) []Result
+
+// MostActiveUsers active users sorted by amount of PRs created and commits pushed
 func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
@@ -69,7 +64,7 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 	return results[:n], nil
 }
 
-// Top 10 repositories sorted by amount of commits pushed
+// MostActiveRepos repositories sorted by amount of commits pushed
 func MostActiveRepos(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
@@ -93,7 +88,7 @@ func MostActiveRepos(events []*Event, commits map[string][]*Commit, n int) ([]*R
 	return results[:n], nil
 }
 
-// Top 10 repositories sorted by amount of watch events
+// MostWachedRepos repositories sorted by amount of watch events
 func MostWachedRepos(events []*Event, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 

@@ -22,12 +22,19 @@ type Loader struct {
 	config Config
 }
 
+type Data struct {
+	Actors  map[string]*gbanalytics.Actor
+	Repos   map[string]*gbanalytics.Repo
+	Events  []*gbanalytics.Event
+	Commits map[string][]*gbanalytics.Commit
+}
+
 func NewLoader(cfg Config) *Loader {
 	return &Loader{config: cfg}
 }
 
-func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
-	dt := gbanalytics.Data{
+func (l *Loader) Load(ctx context.Context) (*Data, error) {
+	dt := Data{
 		Actors:  make(map[string]*gbanalytics.Actor),
 		Repos:   make(map[string]*gbanalytics.Repo),
 		Commits: make(map[string][]*gbanalytics.Commit),

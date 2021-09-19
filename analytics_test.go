@@ -6,32 +6,7 @@ import (
 	"github.com/cadicallegari/gbanalytics"
 )
 
-// PushEvent
-// CreateEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// WatchEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// CreateEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// PushEvent
-// CreateEvent
-// PushEvent
-// PushEvent
-// PullRequestEvent
-// IssuesEvent
-// DeleteEvent
-// PullRequestEvent
-
 func Test_MostWachedRepos(t *testing.T) {
-
 	events := []*gbanalytics.Event{
 		{
 			RepoID: "001",

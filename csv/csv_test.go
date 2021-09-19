@@ -9,7 +9,7 @@ import (
 )
 
 func TestLoadData(t *testing.T) {
-	dataPath := "../.data"
+	dataPath := "./testdata"
 
 	loader := csv.NewLoader(csv.Config{
 		ActorsFile:  path.Join(dataPath, "actors.csv"),
@@ -23,19 +23,67 @@ func TestLoadData(t *testing.T) {
 		t.Fatalf("not expected error loading data %s", err)
 	}
 
-	if len(dt.Actors) < 10 {
-		t.Fatalf("actors not loaded as expected")
+	if len(dt.Actors) != 17 {
+		t.Fatalf("loaded %d actors, want %d", len(dt.Actors), 17)
 	}
 
-	if len(dt.Commits) < 10 {
-		t.Fatalf("commits not loaded as expected")
+	for id, a := range dt.Actors {
+		if a.ID == "" || a.Username == "" {
+			t.Fatalf("actor with empty values [%q] %+v", id, a)
+		}
 	}
 
-	if len(dt.Events) < 10 {
-		t.Fatalf("events not loaded as expected")
+	if len(dt.Repos) != 74 {
+		t.Fatalf("loaded %d repos, want %d", len(dt.Repos), 74)
 	}
 
-	if len(dt.Repos) < 10 {
-		t.Fatalf("repos not loaded as expected")
+	for id, r := range dt.Repos {
+		if r.ID == "" || r.Name == "" {
+			t.Fatalf("repo with empty values [%q] %+v", id, r)
+		}
 	}
+
+	if len(dt.Commits) != 57 {
+		t.Fatalf("loaded %d commits, want %d", len(dt.Commits), 57)
+	}
+
+	for eventID, commits := range dt.Commits {
+		for _, c := range commits {
+			if c.EventID == "" || c.SHA == "" || c.Message == "" {
+				t.Fatalf("commit with empty values [%q] %+v", eventID, c)
+			}
+
+			if c.EventID != eventID {
+				t.Fatalf("commit grouped with wrong event id %q, want %q", c.EventID, eventID)
+			}
+
+		}
+	}
+
+	if len(dt.Events) != 96 {
+		t.Fatalf("loaded %d events, want %d", len(dt.Events), 96)
+	}
+
+	for i, e := range dt.Events {
+		if e.ID == "" || e.Type == "" || e.ActorID == "" || e.RepoID == "" {
+			t.Fatalf("repo with empty values [%d] %+v", i, e)
+		}
+	}
+}
+
+func TestLoadData_WrongDir(t *testing.T) {
+	dataPath := "."
+
+	loader := csv.NewLoader(csv.Config{
+		ActorsFile:  path.Join(dataPath, "actors.csv"),
+		CommitsFile: path.Join(dataPath, "commits.csv"),
+		EventsFile:  path.Join(dataPath, "events.csv"),
+		ReposFile:   path.Join(dataPath, "repos.csv"),
+	})
+
+	_, err := loader.Load(context.TODO())
+	if err == nil {
+		t.Fatalf("expecting error when could not load the files, got nil")
+	}
+
 }

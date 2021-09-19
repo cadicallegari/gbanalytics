@@ -23,6 +23,12 @@ type config struct {
 	query string
 }
 
+var validQueries = []string{
+	"top-active-users",
+	"top-active-repos",
+	"top-watch-repos",
+}
+
 func (cfg config) validate() error {
 	if cfg.showVersion {
 		return nil
@@ -32,8 +38,16 @@ func (cfg config) validate() error {
 		return fmt.Errorf("missing data path parameter")
 	}
 
-	if cfg.query == "" {
-		return fmt.Errorf("missing query parameter")
+	var queryFound bool
+	for _, vq := range validQueries {
+		if cfg.query == vq {
+			queryFound = true
+			continue
+		}
+	}
+
+	if !queryFound {
+		return fmt.Errorf("invalid query param")
 	}
 
 	return nil
@@ -55,8 +69,9 @@ func parseArgs() config {
 func usage() {
 	fmt.Fprintf(
 		flag.CommandLine.Output(),
-		"parse data files and answer some questions. Version: %s\n",
+		"\nparse data files and answer some questions. Version: %s\nvalid queries: %s\n",
 		version,
+		validQueries,
 	)
 
 	flag.PrintDefaults()
@@ -127,8 +142,7 @@ func main() {
 		}
 
 	default:
-		// move it to the validation step
-		fmt.Fprintln(os.Stderr, "unkown query")
+		fmt.Fprintln(os.Stderr, "unknown query")
 		os.Exit(1)
 	}
 }
