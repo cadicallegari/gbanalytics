@@ -27,8 +27,8 @@ type Commit struct {
 }
 
 type Data struct {
-	Actors  []*Actor
-	Repos   []*Repo
+	Actors  map[string]*Actor
+	Repos   map[string]*Repo
 	Events  []*Event
 	Commits []*Commit
 }

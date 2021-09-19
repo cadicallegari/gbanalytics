@@ -27,7 +27,10 @@ func NewLoader(cfg Config) *Loader {
 }
 
 func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
-	var dt gbanalytics.Data
+	dt := gbanalytics.Data{
+		Actors: make(map[string]*gbanalytics.Actor),
+		Repos:  make(map[string]*gbanalytics.Repo),
+	}
 
 	g, _ := errgroup.WithContext(ctx)
 
@@ -37,7 +40,9 @@ func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
 
-		dt.Actors = actors
+		for _, a := range actors {
+			dt.Actors[a.ID] = a
+		}
 
 		return nil
 	})
@@ -70,7 +75,9 @@ func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
 
-		dt.Repos = repos
+		for _, r := range repos {
+			dt.Repos[r.ID] = r
+		}
 
 		return nil
 	})
@@ -151,7 +158,7 @@ func loadRepos(fn string) ([]*gbanalytics.Repo, error) {
 	for _, col := range lines {
 		repos = append(repos, &gbanalytics.Repo{
 			ID:   col["id"],
-			Name: col["username"],
+			Name: col["name"],
 		})
 	}
 

@@ -116,14 +116,14 @@ func main() {
 		}
 
 	case "top-watch-repos":
-		repos, err := gbanalytics.MostWachedRepos(dt.Events, 10)
+		results, err := gbanalytics.MostWachedRepos(dt.Events, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most watched repos: %s", err))
 			os.Exit(1)
 		}
 
-		for i, r := range repos {
-			fmt.Println(i+1, r.ID)
+		for i, r := range results {
+			fmt.Printf("%3d| %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
 		}
 
 	default:
