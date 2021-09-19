@@ -33,6 +33,25 @@ type Result struct {
 	Count int
 }
 
+func rankToResults(rank map[string]int, n int) []*Result {
+	results := make([]*Result, 0, len(rank))
+
+	for k, v := range rank {
+		results = append(results, &Result{ID: k, Count: v})
+	}
+
+	sort.SliceStable(results, func(i, j int) bool {
+		// order desc
+		return results[i].Count > results[j].Count
+	})
+
+	if len(results) > n {
+		return results[:n]
+	}
+
+	return results
+}
+
 // MostActiveUsers active users sorted by amount of PRs created and commits pushed
 func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
@@ -47,22 +66,7 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 		}
 	}
 
-	results := make([]*Result, 0, len(rank))
-
-	for k, v := range rank {
-		results = append(results, &Result{ID: k, Count: v})
-	}
-
-	sort.SliceStable(results, func(i, j int) bool {
-		// order desc
-		return results[i].Count > results[j].Count
-	})
-
-	if len(results) > n {
-		return results[:n], nil
-	}
-
-	return results, nil
+	return rankToResults(rank, n), nil
 }
 
 // MostActiveRepos repositories sorted by amount of commits pushed
@@ -75,22 +79,7 @@ func MostActiveRepos(events []*Event, commitsByEvent map[string][]*Commit, n int
 		}
 	}
 
-	results := make([]*Result, 0, len(rank))
-
-	for k, v := range rank {
-		results = append(results, &Result{ID: k, Count: v})
-	}
-
-	sort.SliceStable(results, func(i, j int) bool {
-		// order desc
-		return results[i].Count > results[j].Count
-	})
-
-	if len(results) > n {
-		return results[:n], nil
-	}
-
-	return results, nil
+	return rankToResults(rank, n), nil
 }
 
 // MostWachedRepos repositories sorted by amount of watch events
@@ -103,20 +92,5 @@ func MostWachedRepos(events []*Event, n int) ([]*Result, error) {
 		}
 	}
 
-	results := make([]*Result, 0, len(rank))
-
-	for k, v := range rank {
-		results = append(results, &Result{ID: k, Count: v})
-	}
-
-	sort.SliceStable(results, func(i, j int) bool {
-		// order desc
-		return results[i].Count > results[j].Count
-	})
-
-	if len(results) > n {
-		return results[:n], nil
-	}
-
-	return results, nil
+	return rankToResults(rank, n), nil
 }
