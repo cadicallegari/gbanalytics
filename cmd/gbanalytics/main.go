@@ -94,25 +94,25 @@ func main() {
 
 	switch cfg.query {
 	case "top-active-users":
-		users, err := gbanalytics.MostActiveUsers(dt.Events, 10)
+		results, err := gbanalytics.MostActiveUsers(dt.Events, dt.Commits, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active users: %s", err))
 			os.Exit(1)
 		}
 
-		for i, u := range users {
-			fmt.Println(i+1, u.ID)
+		for i, r := range results {
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Actors[r.ID].Username)
 		}
 
 	case "top-active-repos":
-		repos, err := gbanalytics.MostActiveRepos(dt.Events, 10)
+		results, err := gbanalytics.MostActiveRepos(dt.Events, dt.Commits, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active repos: %s", err))
 			os.Exit(1)
 		}
 
-		for i, r := range repos {
-			fmt.Println(i+1, r.ID)
+		for i, r := range results {
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
 		}
 
 	case "top-watch-repos":
@@ -123,7 +123,7 @@ func main() {
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d| %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
 		}
 
 	default:

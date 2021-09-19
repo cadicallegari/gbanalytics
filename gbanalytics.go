@@ -1,6 +1,8 @@
 package gbanalytics
 
-import "sort"
+import (
+	"sort"
+)
 
 type Actor struct {
 	ID       string
@@ -30,7 +32,7 @@ type Data struct {
 	Actors  map[string]*Actor
 	Repos   map[string]*Repo
 	Events  []*Event
-	Commits []*Commit
+	Commits map[string][]*Commit
 }
 
 type Result struct {
@@ -39,13 +41,56 @@ type Result struct {
 }
 
 // Top 10 active users sorted by amount of PRs created and commits pushed
-func MostActiveUsers(events []*Event, n int) ([]*Result, error) {
-	return nil, nil
+func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
+	rank := make(map[string]int)
+
+	for _, e := range events {
+		if e.Type == "PullRequestEvent" {
+			rank[e.ActorID]++
+		}
+
+		if e.Type == "PushEvent" {
+			rank[e.ActorID] += len(commits[e.ID])
+		}
+
+	}
+
+	results := make([]*Result, 0, len(rank))
+
+	for k, v := range rank {
+		results = append(results, &Result{ID: k, Count: v})
+	}
+
+	sort.SliceStable(results, func(i, j int) bool {
+		// order desc
+		return results[i].Count > results[j].Count
+	})
+
+	return results[:n], nil
 }
 
 // Top 10 repositories sorted by amount of commits pushed
-func MostActiveRepos(events []*Event, n int) ([]*Result, error) {
-	return nil, nil
+func MostActiveRepos(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
+	rank := make(map[string]int)
+
+	for _, e := range events {
+		if e.Type == "PushEvent" {
+			rank[e.RepoID] += len(commits[e.ID])
+		}
+	}
+
+	results := make([]*Result, 0, len(rank))
+
+	for k, v := range rank {
+		results = append(results, &Result{ID: k, Count: v})
+	}
+
+	sort.SliceStable(results, func(i, j int) bool {
+		// order desc
+		return results[i].Count > results[j].Count
+	})
+
+	return results[:n], nil
 }
 
 // Top 10 repositories sorted by amount of watch events

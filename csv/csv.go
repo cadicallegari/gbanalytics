@@ -28,8 +28,9 @@ func NewLoader(cfg Config) *Loader {
 
 func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
 	dt := gbanalytics.Data{
-		Actors: make(map[string]*gbanalytics.Actor),
-		Repos:  make(map[string]*gbanalytics.Repo),
+		Actors:  make(map[string]*gbanalytics.Actor),
+		Repos:   make(map[string]*gbanalytics.Repo),
+		Commits: make(map[string][]*gbanalytics.Commit),
 	}
 
 	g, _ := errgroup.WithContext(ctx)
@@ -53,7 +54,9 @@ func (l *Loader) Load(ctx context.Context) (*gbanalytics.Data, error) {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
 
-		dt.Commits = commits
+		for _, c := range commits {
+			dt.Commits[c.EventID] = append(dt.Commits[c.EventID], c)
+		}
 
 		return nil
 	})
@@ -173,7 +176,7 @@ func readLines(fn string) ([]map[string]string, error) {
 	defer r.Close()
 
 	cr := csv.NewReader(r)
-	// cr.Comma = ','
+	cr.Comma = ','
 	cr.TrimLeadingSpace = true
 	cr.LazyQuotes = true
 
