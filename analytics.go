@@ -58,7 +58,11 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 		return results[i].Count > results[j].Count
 	})
 
-	return results[:n], nil
+	if len(results) > n {
+		return results[:n], nil
+	}
+
+	return results, nil
 }
 
 // MostActiveRepos repositories sorted by amount of commits pushed
@@ -82,7 +86,11 @@ func MostActiveRepos(events []*Event, commitsByEvent map[string][]*Commit, n int
 		return results[i].Count > results[j].Count
 	})
 
-	return results[:n], nil
+	if len(results) > n {
+		return results[:n], nil
+	}
+
+	return results, nil
 }
 
 // MostWachedRepos repositories sorted by amount of watch events
@@ -106,5 +114,9 @@ func MostWachedRepos(events []*Event, n int) ([]*Result, error) {
 		return results[i].Count > results[j].Count
 	})
 
-	return results[:n], nil
+	if len(results) > n {
+		return results[:n], nil
+	}
+
+	return results, nil
 }
