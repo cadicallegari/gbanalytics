@@ -43,11 +43,11 @@ func TestLoadData(t *testing.T) {
 		}
 	}
 
-	if len(dt.Commits) != 57 {
-		t.Fatalf("loaded %d commits, want %d", len(dt.Commits), 57)
+	if len(dt.CommitsByEvent) != 57 {
+		t.Fatalf("loaded %d commits, want %d", len(dt.CommitsByEvent), 57)
 	}
 
-	for eventID, commits := range dt.Commits {
+	for eventID, commits := range dt.CommitsByEvent {
 		for _, c := range commits {
 			if c.EventID == "" || c.SHA == "" || c.Message == "" {
 				t.Fatalf("commit with empty values [%q] %+v", eventID, c)

@@ -23,10 +23,10 @@ type Loader struct {
 }
 
 type Data struct {
-	Actors  map[string]*gbanalytics.Actor
-	Repos   map[string]*gbanalytics.Repo
-	Events  []*gbanalytics.Event
-	Commits map[string][]*gbanalytics.Commit
+	Actors         map[string]*gbanalytics.Actor
+	Repos          map[string]*gbanalytics.Repo
+	Events         []*gbanalytics.Event
+	CommitsByEvent map[string][]*gbanalytics.Commit
 }
 
 func NewLoader(cfg Config) *Loader {
@@ -35,9 +35,9 @@ func NewLoader(cfg Config) *Loader {
 
 func (l *Loader) Load(ctx context.Context) (*Data, error) {
 	dt := Data{
-		Actors:  make(map[string]*gbanalytics.Actor),
-		Repos:   make(map[string]*gbanalytics.Repo),
-		Commits: make(map[string][]*gbanalytics.Commit),
+		Actors:         make(map[string]*gbanalytics.Actor),
+		Repos:          make(map[string]*gbanalytics.Repo),
+		CommitsByEvent: make(map[string][]*gbanalytics.Commit),
 	}
 
 	g, _ := errgroup.WithContext(ctx)
@@ -62,7 +62,7 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 		}
 
 		for _, c := range commits {
-			dt.Commits[c.EventID] = append(dt.Commits[c.EventID], c)
+			dt.CommitsByEvent[c.EventID] = append(dt.CommitsByEvent[c.EventID], c)
 		}
 
 		return nil

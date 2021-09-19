@@ -33,8 +33,6 @@ type Result struct {
 	Count int
 }
 
-// func sortResultByCount(origin []*Result, n int) []Result
-
 // MostActiveUsers active users sorted by amount of PRs created and commits pushed
 func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
@@ -47,7 +45,6 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 		if e.Type == "PushEvent" {
 			rank[e.ActorID] += len(commits[e.ID])
 		}
-
 	}
 
 	results := make([]*Result, 0, len(rank))
@@ -65,12 +62,12 @@ func MostActiveUsers(events []*Event, commits map[string][]*Commit, n int) ([]*R
 }
 
 // MostActiveRepos repositories sorted by amount of commits pushed
-func MostActiveRepos(events []*Event, commits map[string][]*Commit, n int) ([]*Result, error) {
+func MostActiveRepos(events []*Event, commitsByEvent map[string][]*Commit, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
 	for _, e := range events {
 		if e.Type == "PushEvent" {
-			rank[e.RepoID] += len(commits[e.ID])
+			rank[e.RepoID] += len(commitsByEvent[e.ID])
 		}
 	}
 

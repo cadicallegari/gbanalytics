@@ -21,6 +21,9 @@ type config struct {
 
 	// what is the question to be aswered
 	query string
+
+	// size of the rank
+	limit int
 }
 
 var validQueries = []string{
@@ -60,6 +63,7 @@ func parseArgs() config {
 
 	flag.StringVar(&cfg.dataPath, "data", "", "where to find the files with the data")
 	flag.StringVar(&cfg.query, "query", "", "question to be aswered")
+	flag.IntVar(&cfg.limit, "limit", 10, "size of the top rank")
 
 	flag.Parse()
 
@@ -101,7 +105,7 @@ func main() {
 
 	ctx := context.Background()
 
-	dt, err := loader.Load(ctx)
+	data, err := loader.Load(ctx)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Errorf("unable to load data: %s", err))
 		os.Exit(1)
@@ -109,36 +113,36 @@ func main() {
 
 	switch cfg.query {
 	case "top-active-users":
-		results, err := gbanalytics.MostActiveUsers(dt.Events, dt.Commits, 10)
+		results, err := gbanalytics.MostActiveUsers(data.Events, data.CommitsByEvent, cfg.limit)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active users: %s", err))
 			os.Exit(1)
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Actors[r.ID].Username)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Actors[r.ID].Username)
 		}
 
 	case "top-active-repos":
-		results, err := gbanalytics.MostActiveRepos(dt.Events, dt.Commits, 10)
+		results, err := gbanalytics.MostActiveRepos(data.Events, data.CommitsByEvent, cfg.limit)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active repos: %s", err))
 			os.Exit(1)
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Repos[r.ID].Name)
 		}
 
 	case "top-watch-repos":
-		results, err := gbanalytics.MostWachedRepos(dt.Events, 10)
+		results, err := gbanalytics.MostWachedRepos(data.Events, cfg.limit)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most watched repos: %s", err))
 			os.Exit(1)
 		}
 
 		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, dt.Repos[r.ID].Name)
+			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, data.Repos[r.ID].Name)
 		}
 
 	default:
