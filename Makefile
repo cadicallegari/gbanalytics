@@ -19,7 +19,7 @@ help: ## display this help
 	@ echo
 
 build: ## Build the binaries
-	@go build -v -ldflags "$(ldflags)" ./cmd/gbanalytics
+	@go build -v -ldflags "$(ldflags)" -o ./cmd/gbanalytics/gbanalytics ./cmd/gbanalytics
 
 .PHONY: test
 test: ## Run unit tests, set testcase=<testcase> or flag=-v if you need them

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/cadicallegari/gbanalytics"
 	"github.com/cadicallegari/gbanalytics/csv"
 )
 
@@ -93,36 +94,36 @@ func main() {
 
 	switch cfg.query {
 	case "top-active-users":
-		users, err := dt.MostActiveUsers(10)
+		users, err := gbanalytics.MostActiveUsers(dt.Events, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active users: %s", err))
 			os.Exit(1)
 		}
 
 		for i, u := range users {
-			fmt.Println(i+1, u.Username)
+			fmt.Println(i+1, u.ID)
 		}
 
 	case "top-active-repos":
-		repos, err := dt.MostActiveRepos(10)
+		repos, err := gbanalytics.MostActiveRepos(dt.Events, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active repos: %s", err))
 			os.Exit(1)
 		}
 
 		for i, r := range repos {
-			fmt.Println(i+1, r.Name)
+			fmt.Println(i+1, r.ID)
 		}
 
 	case "top-watch-repos":
-		repos, err := dt.MostWachedRepos(10)
+		repos, err := gbanalytics.MostWachedRepos(dt.Events, 10)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most watched repos: %s", err))
 			os.Exit(1)
 		}
 
 		for i, r := range repos {
-			fmt.Println(i+1, r.Name)
+			fmt.Println(i+1, r.ID)
 		}
 
 	default:
