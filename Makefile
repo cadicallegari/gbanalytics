@@ -17,8 +17,14 @@ help: ## display this help
 	@ grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "    \033[36m%-16s\033[0m - %s\n", $$1, $$2}'
 	@ echo
 
+.PHONY: build
 build: ## Build the binaries
-	@go build -v -ldflags "$(ldflags)" -o ./cmd/gbanalytics/gbanalytics ./cmd/gbanalytics
+	go build -v -ldflags "$(ldflags)" -o ./cmd/gbanalytics/gbanalytics ./cmd/gbanalytics
+
+.PHONY: install
+install: override version=$(shell git rev-parse --short HEAD)
+install: ## Install the binaries
+	go install  -ldflags "$(ldflags)" ./cmd/gbanalytics
 
 .PHONY: test
 test: ## Run unit tests, set testcase=<testcase> or flag=-v if you need them

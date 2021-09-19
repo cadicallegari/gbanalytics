@@ -63,7 +63,7 @@ func (cfg config) validate() error {
 func parseArgs() config {
 	var cfg config
 
-	flag.BoolVar(&cfg.showVersion, "version", false, "Show version")
+	flag.BoolVar(&cfg.showVersion, "version", false, "show version")
 
 	flag.StringVar(&cfg.dataPath, "data", "", "where to find the files with the data")
 	flag.StringVar(&cfg.query, "query", "", "question to be aswered")
@@ -77,8 +77,7 @@ func parseArgs() config {
 func usage() {
 	fmt.Fprintf(
 		flag.CommandLine.Output(),
-		"\nparse data files and answer some questions. Version: %s\nvalid queries: %s\n",
-		version,
+		"\nparse data files and answer some questions.\nvalid queries: %s\n",
 		validQueries,
 	)
 
