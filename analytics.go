@@ -4,16 +4,19 @@ import (
 	"sort"
 )
 
+// Actor entity
 type Actor struct {
 	ID       string
 	Username string
 }
 
+// Repo entity
 type Repo struct {
 	ID   string
 	Name string
 }
 
+// Event entity with its related commits
 type Event struct {
 	ID      string
 	Type    string
@@ -22,14 +25,19 @@ type Event struct {
 	Commits []*Commit
 }
 
+// Commit entity
 type Commit struct {
 	EventID string
 	SHA     string
 	Message string
 }
 
+// Result entity used for ranks
 type Result struct {
-	ID    string
+	// ID of the entity
+	ID string
+
+	// Count used to sort
 	Count int
 }
 

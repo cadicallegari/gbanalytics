@@ -11,14 +11,12 @@ import (
 func TestLoadData(t *testing.T) {
 	dataPath := "./testdata"
 
-	loader := csv.NewLoader(csv.Config{
+	dt, err := csv.Load(context.TODO(), csv.Config{
 		ActorsFile:  path.Join(dataPath, "actors.csv"),
 		CommitsFile: path.Join(dataPath, "commits.csv"),
 		EventsFile:  path.Join(dataPath, "events.csv"),
 		ReposFile:   path.Join(dataPath, "repos.csv"),
 	})
-
-	dt, err := loader.Load(context.TODO())
 	if err != nil {
 		t.Fatalf("not expected error loading data %s", err)
 	}
@@ -61,14 +59,12 @@ func TestLoadData(t *testing.T) {
 func TestLoadData_WrongDir(t *testing.T) {
 	dataPath := "."
 
-	loader := csv.NewLoader(csv.Config{
+	_, err := csv.Load(context.TODO(), csv.Config{
 		ActorsFile:  path.Join(dataPath, "actors.csv"),
 		CommitsFile: path.Join(dataPath, "commits.csv"),
 		EventsFile:  path.Join(dataPath, "events.csv"),
 		ReposFile:   path.Join(dataPath, "repos.csv"),
 	})
-
-	_, err := loader.Load(context.TODO())
 	if err == nil {
 		t.Fatalf("expecting error when could not load the files, got nil")
 	}

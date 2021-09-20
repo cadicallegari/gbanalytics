@@ -11,6 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// Config contains the file path from where the data should be read
 type Config struct {
 	ActorsFile  string
 	CommitsFile string
@@ -18,21 +19,20 @@ type Config struct {
 	ReposFile   string
 }
 
-type Loader struct {
-	config Config
-}
-
+// Data contains the data loaded from the files and ready to be processed
 type Data struct {
+	// Actors loaded accessibles by id
 	Actors map[string]*gbanalytics.Actor
-	Repos  map[string]*gbanalytics.Repo
+
+	// Repos loaded accessibles by id
+	Repos map[string]*gbanalytics.Repo
+
+	// Events loaded with its commits
 	Events []*gbanalytics.Event
 }
 
-func NewLoader(cfg Config) *Loader {
-	return &Loader{config: cfg}
-}
-
-func (l *Loader) Load(ctx context.Context) (*Data, error) {
+// Load data from files that are specified by config into Data struct
+func Load(ctx context.Context, config Config) (*Data, error) {
 	dt := Data{
 		Actors: make(map[string]*gbanalytics.Actor),
 		Repos:  make(map[string]*gbanalytics.Repo),
@@ -41,7 +41,7 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 	g, _ := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		actors, err := loadActors(l.config.ActorsFile)
+		actors, err := loadActors(config.ActorsFile)
 		if err != nil {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
@@ -54,7 +54,7 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 	})
 
 	g.Go(func() error {
-		repos, err := loadRepos(l.config.ReposFile)
+		repos, err := loadRepos(config.ReposFile)
 		if err != nil {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
@@ -68,7 +68,7 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 
 	commitsByEvent := make(map[string][]*gbanalytics.Commit)
 	g.Go(func() error {
-		commits, err := loadCommitsFile(l.config.CommitsFile)
+		commits, err := loadCommitsFile(config.CommitsFile)
 		if err != nil {
 			return fmt.Errorf("unable to load actors: %w", err)
 		}
@@ -85,7 +85,7 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 		return nil, err
 	}
 
-	dt.Events, err = loadEvents(l.config.EventsFile, commitsByEvent)
+	dt.Events, err = loadEvents(config.EventsFile, commitsByEvent)
 	if err != nil {
 		return nil, fmt.Errorf("unable to load actors: %w", err)
 	}

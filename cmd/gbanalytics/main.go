@@ -122,16 +122,14 @@ func main() {
 		return
 	}
 
-	loader := csv.NewLoader(csv.Config{
+	ctx := context.Background()
+
+	data, err := csv.Load(ctx, csv.Config{
 		ActorsFile:  path.Join(cfg.dataPath, "actors.csv"),
 		CommitsFile: path.Join(cfg.dataPath, "commits.csv"),
 		EventsFile:  path.Join(cfg.dataPath, "events.csv"),
 		ReposFile:   path.Join(cfg.dataPath, "repos.csv"),
 	})
-
-	ctx := context.Background()
-
-	data, err := loader.Load(ctx)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Errorf("unable to load data: %s", err))
 		os.Exit(1)
