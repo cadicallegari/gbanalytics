@@ -30,9 +30,15 @@ install: ## Install the binaries
 test: ## Run unit tests, set testcase=<testcase> or flag=-v if you need them
 	$(gotest)
 
-.PHONY: fmt
-fmt: ## run gofmt
+.PHONY: go-fmt
+go-fmt: ## run gofmt
 	gofmt -w -s -l .
 
+.PHONY: go-vet
+go-vet: ## run go vet
+	go vet ./...
+
 .PHONY: static-analysis
-static-analysis: fmt ## run gofmt
+static-analysis: go-fmt go-vet
+
+

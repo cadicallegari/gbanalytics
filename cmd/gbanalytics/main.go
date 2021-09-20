@@ -70,7 +70,7 @@ func usage() {
 
 	fmt.Fprintf(
 		flag.CommandLine.Output(),
-		"\nparse data with github data and print the top rank.\nvalid queries: %s\n",
+		"\nparse files with github data and print the top rank.\nvalid queries: %s\n",
 		strings.TrimRight(queries.String(), ", "),
 	)
 
