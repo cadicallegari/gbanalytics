@@ -40,7 +40,7 @@ func rankToResults(rank map[string]int, n int) []*Result {
 		results = append(results, &Result{ID: k, Count: v})
 	}
 
-	sort.SliceStable(results, func(i, j int) bool {
+	sort.Slice(results, func(i, j int) bool {
 		// order desc
 		return results[i].Count > results[j].Count
 	})
