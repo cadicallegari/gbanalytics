@@ -65,7 +65,7 @@ func parseArgs() config {
 
 	flag.BoolVar(&cfg.showVersion, "version", false, "show version")
 
-	flag.StringVar(&cfg.dataPath, "data", "", "where to find the files with the data")
+	flag.StringVar(&cfg.dataPath, "path", "", "where to find the files with the data")
 	flag.StringVar(&cfg.query, "query", "", "question to be aswered")
 	flag.IntVar(&cfg.limit, "limit", 10, "size of the top rank")
 
