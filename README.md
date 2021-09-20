@@ -5,28 +5,13 @@ Get some insights about repositories and users based on the Github events
 
 ## Assumptions
 
-1. All the data is loaded into memory.
-Given that one hour of data has ~6 MB of data,
-if we start to process a bigger period of time, 24 hours, for instance, we will have ~150 MB, which is not little, but it is still an acceptable amount of data to process.
-If the number of events increases and multiplies the total amount of data,
-it's possible to reduce the amount of data loaded saving only the attributes needed to get the metrics,
-excluding commit message and SHA for example.
+1. Give that one hour of data uses ~6MB (~150MB per day), will fit in memory, I've decided to load all the data in memory before processing it.
+For longer periods some optimization could be necessary, e.g. load only essencial data to be processed (excluding commit message and commit hash).
 
-1. Pull requests and commits have the same weight.
+1. Pull requests and commits have the same weight while sorting.
 
-1. To keep the cli simple, we are expecting a directory having the files with the
-expected names inside.
-To improve this, we could enable every file to be specified as an argument,
-receive a zip file or a mix of them all
-
-For know they must be inside the same dir and be named like follow
-```
-actors.csv
-commits.csv
-events.csv
-repos.csv
-```
-
+1. It's expected that all files are in the same directory with name
+`actors.csv`, `commits.csv`, `events.csv` and `repos.csv` for sake of simplicity. A next step could be pass a parameter where to locale each file, or a single zip containing all files.
 
 ## Running
 
@@ -35,7 +20,7 @@ You can run the main go file, build the binary before run or install before run
 ```
 go install github.com/cadicallegari/gbanalytics/cmd/gbanalytics@latest
 
-gbanalytics -data data/path -query top-active-users
+gbanalytics -path data/path -query top-active-users
 ```
 
 the current availiable queries are:
