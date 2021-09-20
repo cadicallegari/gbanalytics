@@ -18,7 +18,7 @@ For longer periods some optimization could be necessary, e.g. load only essencia
 You can run the main go file, build the binary before run or install before run
 
 ```
-go install github.com/cadicallegari/gbanalytics/cmd/gbanalytics@latest
+make install
 
 gbanalytics -path data/path -query top-active-users
 ```
