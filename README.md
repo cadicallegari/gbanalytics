@@ -19,12 +19,22 @@ expected names inside.
 To improve this, we could enable every file to be specified as an argument,
 receive a zip file or a mix of them all
 
+For know they must be inside the same dir and be named like follow
+```
+actors.csv
+commits.csv
+events.csv
+repos.csv
+```
+
+
 ## Running
 
 You can run the main go file, build the binary before run or install before run
 
 ```
-make install
+go install github.com/cadicallegari/gbanalytics/cmd/gbanalytics@latest
+
 gbanalytics -data ./.data -query top-active-users
 ```
 
@@ -41,7 +51,6 @@ To see the complete list of avaliable options:
 ```
 gbanalytics -help
 ```
-
 
 
 ## Develop
