@@ -12,11 +12,11 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
 
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Lint
-      run: make lint
+    - name: Static Analysis
+      run: make static-analysis
 
     - name: Build
       run: make build
