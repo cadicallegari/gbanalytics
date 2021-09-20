@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/cadicallegari/gbanalytics"
 	"github.com/cadicallegari/gbanalytics/csv"
@@ -15,21 +16,15 @@ var version = "dev" // it will be set on build time
 
 type config struct {
 	showVersion bool
-
-	// maybe it is better to have a single var for each file
-	dataPath string
-
-	// what is the question to be aswered
-	query string
-
-	// size of the rank
-	limit int
+	dataPath    string
+	query       string
+	limit       int
 }
 
-var validQueries = []string{
-	"top-active-users",
-	"top-active-repos",
-	"top-watch-repos",
+var validQueries = map[string]struct{}{
+	"top-active-users": {},
+	"top-active-repos": {},
+	"top-watch-repos":  {},
 }
 
 func (cfg config) validate() error {
@@ -41,19 +36,11 @@ func (cfg config) validate() error {
 		return fmt.Errorf("missing data path parameter")
 	}
 
-	if cfg.limit < 0 {
+	if cfg.limit <= 0 {
 		return fmt.Errorf("limit must be greater than 0")
 	}
 
-	var queryFound bool
-	for _, vq := range validQueries {
-		if cfg.query == vq {
-			queryFound = true
-			continue
-		}
-	}
-
-	if !queryFound {
+	if _, ok := validQueries[cfg.query]; !ok {
 		return fmt.Errorf("invalid query param")
 	}
 
@@ -75,10 +62,16 @@ func parseArgs() config {
 }
 
 func usage() {
+	var queries strings.Builder
+	for k := range validQueries {
+		queries.WriteString(k)
+		queries.WriteString(", ")
+	}
+
 	fmt.Fprintf(
 		flag.CommandLine.Output(),
-		"\nparse data files and answer some questions.\nvalid queries: %s\n",
-		validQueries,
+		"\nparse data with github data and print the top rank.\nvalid queries: %s\n",
+		strings.TrimRight(queries.String(), ", "),
 	)
 
 	flag.PrintDefaults()
