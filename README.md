@@ -35,7 +35,7 @@ You can run the main go file, build the binary before run or install before run
 ```
 go install github.com/cadicallegari/gbanalytics/cmd/gbanalytics@latest
 
-gbanalytics -data ./.data -query top-active-users
+gbanalytics -data data/path -query top-active-users
 ```
 
 the current availiable queries are:
@@ -53,7 +53,7 @@ gbanalytics -help
 ```
 
 
-## Develop
+## Developing
 
 ### Testing
 
