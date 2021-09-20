@@ -31,6 +31,10 @@ func baseEvents() []*gbanalytics.Event {
 			RepoID:  "001",
 			ActorID: "999",
 			Type:    "PushEvent",
+			Commits: []*gbanalytics.Commit{
+				{Message: "m", SHA: "s"},
+				{Message: "m", SHA: "s"},
+			},
 		},
 		{
 			ID:      "5",
@@ -56,12 +60,18 @@ func baseEvents() []*gbanalytics.Event {
 			RepoID:  "002",
 			ActorID: "777",
 			Type:    "PushEvent",
+			Commits: []*gbanalytics.Commit{
+				{Message: "g", SHA: "g"},
+			},
 		},
 		{
 			ID:      "9",
 			RepoID:  "002",
 			ActorID: "888",
 			Type:    "PushEvent",
+			Commits: []*gbanalytics.Commit{
+				{Message: "u", SHA: "u"},
+			},
 		},
 		{
 			ID:      "10",
@@ -81,6 +91,13 @@ func baseEvents() []*gbanalytics.Event {
 			RepoID:  "003",
 			ActorID: "777",
 			Type:    "PushEvent",
+			Commits: []*gbanalytics.Commit{
+				{Message: "a", SHA: "a"},
+				{Message: "b", SHA: "b"},
+				{Message: "c", SHA: "c"},
+				{Message: "d", SHA: "d"},
+				{Message: "e", SHA: "e"},
+			},
 		},
 
 		{
@@ -88,39 +105,6 @@ func baseEvents() []*gbanalytics.Event {
 			RepoID:  "001",
 			ActorID: "888",
 			Type:    "PullRequestEvent",
-		},
-	}
-}
-
-func baseCommitsByEvent() map[string][]*gbanalytics.Commit {
-	return map[string][]*gbanalytics.Commit{
-		// repo 001
-		// user 999
-		"4": {
-			{Message: "m", SHA: "s"},
-			{Message: "m", SHA: "s"},
-		},
-
-		// repo 002
-		// user 999
-		"8": {
-			{Message: "g", SHA: "g"},
-		},
-
-		// repo 002
-		// user 888
-		"9": {
-			{Message: "u", SHA: "u"},
-		},
-
-		// repo 003
-		// user 777
-		"12": {
-			{Message: "a", SHA: "a"},
-			{Message: "b", SHA: "b"},
-			{Message: "c", SHA: "c"},
-			{Message: "d", SHA: "d"},
-			{Message: "e", SHA: "e"},
 		},
 	}
 }
@@ -145,9 +129,7 @@ func assertResult(t *testing.T, got, want []*gbanalytics.Result) {
 }
 
 func Test_MostActiveUsers(t *testing.T) {
-	results, err := gbanalytics.MostActiveUsers(
-		baseEvents(), baseCommitsByEvent(), 50,
-	)
+	results, err := gbanalytics.MostActiveUsers(baseEvents(), 50)
 	if err != nil {
 		t.Fatalf("unexpeted error %s", err)
 	}
@@ -171,9 +153,7 @@ func Test_MostActiveUsers(t *testing.T) {
 }
 
 func Test_MostActiveRepos(t *testing.T) {
-	results, err := gbanalytics.MostActiveRepos(
-		baseEvents(), baseCommitsByEvent(), 2,
-	)
+	results, err := gbanalytics.MostActiveRepos(baseEvents(), 2)
 	if err != nil {
 		t.Fatalf("unexpeted error %s", err)
 	}

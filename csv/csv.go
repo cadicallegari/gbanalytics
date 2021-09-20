@@ -23,10 +23,9 @@ type Loader struct {
 }
 
 type Data struct {
-	Actors         map[string]*gbanalytics.Actor
-	Repos          map[string]*gbanalytics.Repo
-	Events         []*gbanalytics.Event
-	CommitsByEvent map[string][]*gbanalytics.Commit
+	Actors map[string]*gbanalytics.Actor
+	Repos  map[string]*gbanalytics.Repo
+	Events []*gbanalytics.Event
 }
 
 func NewLoader(cfg Config) *Loader {
@@ -35,9 +34,8 @@ func NewLoader(cfg Config) *Loader {
 
 func (l *Loader) Load(ctx context.Context) (*Data, error) {
 	dt := Data{
-		Actors:         make(map[string]*gbanalytics.Actor),
-		Repos:          make(map[string]*gbanalytics.Repo),
-		CommitsByEvent: make(map[string][]*gbanalytics.Commit),
+		Actors: make(map[string]*gbanalytics.Actor),
+		Repos:  make(map[string]*gbanalytics.Repo),
 	}
 
 	g, _ := errgroup.WithContext(ctx)
@@ -56,30 +54,6 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 	})
 
 	g.Go(func() error {
-		commits, err := loadCommitsFile(l.config.CommitsFile)
-		if err != nil {
-			return fmt.Errorf("unable to load actors: %w", err)
-		}
-
-		for _, c := range commits {
-			dt.CommitsByEvent[c.EventID] = append(dt.CommitsByEvent[c.EventID], c)
-		}
-
-		return nil
-	})
-
-	g.Go(func() error {
-		events, err := loadEvents(l.config.EventsFile)
-		if err != nil {
-			return fmt.Errorf("unable to load actors: %w", err)
-		}
-
-		dt.Events = events
-
-		return nil
-	})
-
-	g.Go(func() error {
 		repos, err := loadRepos(l.config.ReposFile)
 		if err != nil {
 			return fmt.Errorf("unable to load actors: %w", err)
@@ -92,9 +66,28 @@ func (l *Loader) Load(ctx context.Context) (*Data, error) {
 		return nil
 	})
 
+	commitsByEvent := make(map[string][]*gbanalytics.Commit)
+	g.Go(func() error {
+		commits, err := loadCommitsFile(l.config.CommitsFile)
+		if err != nil {
+			return fmt.Errorf("unable to load actors: %w", err)
+		}
+
+		for _, c := range commits {
+			commitsByEvent[c.EventID] = append(commitsByEvent[c.EventID], c)
+		}
+
+		return nil
+	})
+
 	err := g.Wait()
 	if err != nil {
 		return nil, err
+	}
+
+	dt.Events, err = loadEvents(l.config.EventsFile, commitsByEvent)
+	if err != nil {
+		return nil, fmt.Errorf("unable to load actors: %w", err)
 	}
 
 	return &dt, nil
@@ -137,7 +130,7 @@ func loadCommitsFile(fn string) ([]*gbanalytics.Commit, error) {
 	return commits, nil
 }
 
-func loadEvents(fn string) ([]*gbanalytics.Event, error) {
+func loadEvents(fn string, commitsByEvent map[string][]*gbanalytics.Commit) ([]*gbanalytics.Event, error) {
 	lines, err := readLines(fn)
 	if err != nil {
 		return nil, err
@@ -146,12 +139,15 @@ func loadEvents(fn string) ([]*gbanalytics.Event, error) {
 	events := make([]*gbanalytics.Event, 0)
 
 	for _, col := range lines {
-		events = append(events, &gbanalytics.Event{
+		e := &gbanalytics.Event{
 			ID:      col["id"],
 			Type:    col["type"],
 			ActorID: col["actor_id"],
 			RepoID:  col["repo_id"],
-		})
+			Commits: commitsByEvent[col["id"]],
+		}
+
+		events = append(events, e)
 	}
 
 	return events, nil

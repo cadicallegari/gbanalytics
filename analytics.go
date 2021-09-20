@@ -19,9 +19,9 @@ type Event struct {
 	Type    string
 	ActorID string
 	RepoID  string
+	Commits []*Commit
 }
 
-// sha	message	event_id
 type Commit struct {
 	EventID string
 	SHA     string
@@ -53,7 +53,7 @@ func rankToResults(rank map[string]int, n int) []*Result {
 }
 
 // MostActiveUsers active users sorted by amount of PRs created and commits pushed
-func MostActiveUsers(events []*Event, commitsByEvent map[string][]*Commit, n int) ([]*Result, error) {
+func MostActiveUsers(events []*Event, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
 	for _, e := range events {
@@ -62,7 +62,7 @@ func MostActiveUsers(events []*Event, commitsByEvent map[string][]*Commit, n int
 		}
 
 		if e.Type == "PushEvent" {
-			rank[e.ActorID] += len(commitsByEvent[e.ID])
+			rank[e.ActorID] += len(e.Commits)
 		}
 	}
 
@@ -70,12 +70,12 @@ func MostActiveUsers(events []*Event, commitsByEvent map[string][]*Commit, n int
 }
 
 // MostActiveRepos repositories sorted by amount of commits pushed
-func MostActiveRepos(events []*Event, commitsByEvent map[string][]*Commit, n int) ([]*Result, error) {
+func MostActiveRepos(events []*Event, n int) ([]*Result, error) {
 	rank := make(map[string]int)
 
 	for _, e := range events {
 		if e.Type == "PushEvent" {
-			rank[e.RepoID] += len(commitsByEvent[e.ID])
+			rank[e.RepoID] += len(e.Commits)
 		}
 	}
 

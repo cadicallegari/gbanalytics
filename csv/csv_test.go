@@ -43,23 +43,6 @@ func TestLoadData(t *testing.T) {
 		}
 	}
 
-	if len(dt.CommitsByEvent) != 57 {
-		t.Fatalf("loaded %d commits, want %d", len(dt.CommitsByEvent), 57)
-	}
-
-	for eventID, commits := range dt.CommitsByEvent {
-		for _, c := range commits {
-			if c.EventID == "" || c.SHA == "" || c.Message == "" {
-				t.Fatalf("commit with empty values [%q] %+v", eventID, c)
-			}
-
-			if c.EventID != eventID {
-				t.Fatalf("commit grouped with wrong event id %q, want %q", c.EventID, eventID)
-			}
-
-		}
-	}
-
 	if len(dt.Events) != 96 {
 		t.Fatalf("loaded %d events, want %d", len(dt.Events), 96)
 	}
@@ -67,6 +50,10 @@ func TestLoadData(t *testing.T) {
 	for i, e := range dt.Events {
 		if e.ID == "" || e.Type == "" || e.ActorID == "" || e.RepoID == "" {
 			t.Fatalf("repo with empty values [%d] %+v", i, e)
+		}
+
+		if e.Type == "PushEvent" && len(e.Commits) == 0 {
+			t.Fatalf("missing commits for push event [%d] %+v", i, e)
 		}
 	}
 }

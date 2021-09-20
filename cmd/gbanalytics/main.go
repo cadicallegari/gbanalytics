@@ -134,7 +134,7 @@ func main() {
 
 	switch cfg.query {
 	case "top-active-users":
-		results, err := gbanalytics.MostActiveUsers(data.Events, data.CommitsByEvent, cfg.limit)
+		results, err := gbanalytics.MostActiveUsers(data.Events, cfg.limit)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active users: %s", err))
 			os.Exit(1)
@@ -145,7 +145,7 @@ func main() {
 		}
 
 	case "top-active-repos":
-		results, err := gbanalytics.MostActiveRepos(data.Events, data.CommitsByEvent, cfg.limit)
+		results, err := gbanalytics.MostActiveRepos(data.Events, cfg.limit)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, fmt.Errorf("unable get most active repos: %s", err))
 			os.Exit(1)
