@@ -84,6 +84,21 @@ func usage() {
 	flag.PrintDefaults()
 }
 
+func usernameOrID(actors map[string]*gbanalytics.Actor, id string) string {
+	r, ok := actors[id]
+	if !ok {
+		return id
+	}
+
+	return r.Username
+}
+
+func printActorsResults(rs []*gbanalytics.Result, actors map[string]*gbanalytics.Actor) {
+	for i, r := range rs {
+		fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, usernameOrID(actors, r.ID))
+	}
+}
+
 func repoNameOrID(repos map[string]*gbanalytics.Repo, id string) string {
 	r, ok := repos[id]
 	if !ok {
@@ -93,13 +108,10 @@ func repoNameOrID(repos map[string]*gbanalytics.Repo, id string) string {
 	return r.Name
 }
 
-func usernameOrID(actors map[string]*gbanalytics.Actor, id string) string {
-	r, ok := actors[id]
-	if !ok {
-		return id
+func printReposResults(rs []*gbanalytics.Result, repos map[string]*gbanalytics.Repo) {
+	for i, r := range rs {
+		fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, repoNameOrID(repos, r.ID))
 	}
-
-	return r.Username
 }
 
 func main() {
@@ -140,9 +152,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, usernameOrID(data.Actors, r.ID))
-		}
+		printActorsResults(results, data.Actors)
 
 	case "top-active-repos":
 		results, err := gbanalytics.MostActiveRepos(data.Events, cfg.limit)
@@ -151,9 +161,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, repoNameOrID(data.Repos, r.ID))
-		}
+		printReposResults(results, data.Repos)
 
 	case "top-watch-repos":
 		results, err := gbanalytics.MostWachedRepos(data.Events, cfg.limit)
@@ -162,9 +170,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		for i, r := range results {
-			fmt.Printf("%3d | %4d - %s\n", i+1, r.Count, repoNameOrID(data.Repos, r.ID))
-		}
+		printReposResults(results, data.Repos)
 
 	default:
 		fmt.Fprintln(os.Stderr, "unknown query")
